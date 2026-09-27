@@ -1,12 +1,40 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>Connection Temporarily Lost</title>
-</head>
-<body style="font-family: Arial; text-align:center; padding-top: 60px;">
-  <h1>Connection Temporarily Lost</h1>
-  <p>Administrators are currently troubleshooting.</p>
-  <p>Please try again shortly.</p>
-</body>
-</html>
+export default {
+  async fetch(request) {
+    try {
+      // Try to reach your origin
+      const originResponse = await fetch(request);
+
+      // If origin responds normally, return it
+      if (originResponse.ok) {
+        return originResponse;
+      }
+
+      // If origin returns an error (not reachable), show offline page
+      return offlinePage();
+    } catch (err) {
+      // If fetch throws (origin unreachable), show offline page
+      return offlinePage();
+    }
+  }
+}
+
+function offlinePage() {
+  return new Response(`
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Connection Temporarily Lost</title>
+    </head>
+    <body style="font-family: Arial; text-align:center; padding-top: 60px;">
+      <h1>Connection Temporarily Lost</h1>
+      <p>Administrators are currently troubleshooting.</p>
+      <p>Please try again shortly.</p>
+    </body>
+    </html>
+  `, {
+    headers: { "Content-Type": "text/html" },
+    status: 503
+  });
+}
+
